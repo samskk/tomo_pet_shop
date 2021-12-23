@@ -16,8 +16,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // primarySwatch: Colors.blue,
-      ),
+          // primarySwatch: Colors.blue,
+          ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -56,24 +56,6 @@ class _MyHomePageState extends State<MyHomePage> {
       model: "assets/model_unquant.tflite",
       labels: "assets/labels.txt",
     );
-  }
-
-  final ImagePicker _picker = ImagePicker();
-  pickImage() async {
-    var image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      print('hi');
-    } else {
-      print('hi1');
-    }
-
-    setState(() {
-      _loading = true;
-
-      _image = image!;
-    });
-    classifyImage(image!);
-    // _classifyDog(image);
   }
 
   classifyImage(XFile image) async {
@@ -141,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
     onPrimary: Colors.grey,
     primary: Colors.black,
-    minimumSize: const Size(275,40),
+    minimumSize: const Size(275, 40),
     padding: const EdgeInsets.symmetric(horizontal: 16),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(4)),
@@ -150,7 +132,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
