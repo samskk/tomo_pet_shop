@@ -77,52 +77,12 @@ class _GetImageState extends State<GetImage> {
     output = await Tflite.runModelOnImage(
       path: image.path,
       numResults: 3,
-      threshold: 0.05,
+      threshold: 0.5,
       imageMean: 127.5,
       imageStd: 127.5,
     );
-    isclassifed = true;
-    String breed;
-    String conf;
-    String reply = '';
-    try {
-      if (output!.length == 1) {
-        breed = output[0]["label"].replaceAll('\t', ' ').substring(2);
-        breed = breed[0].toUpperCase() + breed.substring(1);
-        conf = (output[0]["confidence"] * 100).toStringAsFixed(0);
-        reply = breed + ' (' + conf + '%)';
-      } else if (output.length == 2) {
-        breed = output[0]["label"].replaceAll('\t', ' ').substring(2);
-        breed = breed[0].toUpperCase() + breed.substring(1);
-        conf = (output[0]["confidence"] * 100).toStringAsFixed(0);
-        reply = breed + ' (' + conf + '%)';
-        breed = output[1]["label"].replaceAll('\t', ' ').substring(2);
-        breed = breed[0].toUpperCase() + breed.substring(1);
-        conf = (output[1]["confidence"] * 100).toStringAsFixed(0);
-        reply = reply + '\n' + breed + ' (' + conf + '%)';
-      } else if (output.length == 3) {
-        breed = output[0]["label"].replaceAll('\t', ' ').substring(2);
-        breed = breed[0].toUpperCase() + breed.substring(1);
-        conf = (output[0]["confidence"] * 100).toStringAsFixed(0);
-        reply = breed + ' (' + conf + '%)';
-        breed = output[1]["label"].replaceAll('\t', ' ').substring(2);
-        breed = breed[0].toUpperCase() + breed.substring(1);
-        conf = (output[1]["confidence"] * 100).toStringAsFixed(0);
-        reply = reply + '\n' + breed + ' (' + conf + '%)';
-        breed = output[2]["label"].replaceAll('\t', ' ').substring(2);
-        breed = breed[0].toUpperCase() + breed.substring(1);
-        conf = (output[2]["confidence"] * 100).toStringAsFixed(0);
-        reply = reply + '\n' + breed + ' (' + conf + '%)';
-      } else if (output.isEmpty) {
-        reply = 'Cannot determine breed';
-      }
-    } catch (e) {
-      reply = 'Cannot determine breed';
-    }
-    print(output);
-    print(output!.length);
     setState(() {
-      result = reply;
+      isclassifed = true;
     });
   }
 
@@ -184,17 +144,20 @@ class _GetImageState extends State<GetImage> {
                     height: 650,
                     child: Column(
                       children: [
-                        if (isimage) buildFileImage(),
                         const SizedBox(
                           height: 20,
                         ),
+                        if (isimage) buildFileImage(),
+                        const SizedBox(
+                          height: 10,
+                        ),
                         Container(
-                          margin: const EdgeInsets.only(top: 5),
+                          margin: const EdgeInsets.only(right: 5, left: 5),
                           padding: const EdgeInsets.only(top: 50, bottom: 50),
                           decoration: const BoxDecoration(
-                              color: Colors.grey,
+                              color: Color(0xffe4e9f5),
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(15))),
+                                  BorderRadius.all(Radius.circular(16))),
                           child: Column(
                             children: [
                               if (isclassifed) displayResult(),
@@ -284,19 +247,21 @@ class _GetImageState extends State<GetImage> {
         ' (' + (output[i]["confidence"] * 100).toStringAsFixed(0) + '%)';
     return Container(
         height: 70,
-        // padding: const EdgeInsets.all(5),
+        // padding: const EdgeInsets.only(right: 2),
         margin: const EdgeInsets.only(top: 8),
         child: Row(
           children: [
             Container(
-              child: Image.asset('assets/image/1.jpg', fit: BoxFit.cover),
-              width: 70,
+              width: 90,
               height: 70,
-              decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(15))),
+              padding: const EdgeInsets.all(5),
+              child: ClipRRect(
+                child: Image.asset('assets/image/1.jpg', fit: BoxFit.cover),
+                borderRadius: BorderRadius.circular(23),
+              ),
             ),
             SizedBox(
-              width: 220,
+              width: 190,
               child: Column(
                 children: [
                   Text(
@@ -309,11 +274,11 @@ class _GetImageState extends State<GetImage> {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.only(left: 5, right: 5),
-                        width: 140,
+                        padding: const EdgeInsets.only(right: 5),
+                        width: 130,
                         child: LinearProgressIndicator(
                           value: confidence,
-                          minHeight: 2,
+                          minHeight: 5,
                           color: Colors.black,
                           backgroundColor: Colors.grey,
                         ),
@@ -333,26 +298,24 @@ class _GetImageState extends State<GetImage> {
             const SizedBox(
               width: 50,
               height: 70,
-              child: Icon(Icons.check_circle_outline,color: Colors.lime,),
+              child: Icon(
+                Icons.check_circle_outline,
+                color: Color(0xffcad4ee),
+              ),
             ),
           ],
         ));
   }
 
-  Widget buildFileImage() => Container(
-        margin: const EdgeInsets.only(top: 40, right: 10, left: 10, bottom: 5),
-        height: 200,
-        width: 300,
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(
-            Radius.circular(10.0),
+  Widget buildFileImage() => SizedBox(
+        width: 330,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Image.file(
+            File(image.path),
+            height: 210,
+            fit: BoxFit.cover,
           ),
-        ),
-        child: Image.file(
-          File(image.path),
-          height: 200,
-          width: 350,
-          fit: BoxFit.cover,
         ),
       );
 
@@ -374,9 +337,11 @@ class _GetImageState extends State<GetImage> {
         );
       }
     } else {
-      return const SizedBox(
+      return Container(
+        alignment: Alignment.center,
         height: 70,
-        child: Text(
+        margin: const EdgeInsets.all(8),
+        child: const Text(
           'Cannot determine breed',
           style: TextStyle(
             fontSize: 18,
