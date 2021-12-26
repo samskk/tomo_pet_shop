@@ -3,9 +3,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
+import 'package:tomo_pet_shop/widget/result_row.dart';
 
 class GetImage extends StatefulWidget {
   const GetImage({Key? key}) : super(key: key);
@@ -16,22 +16,17 @@ class GetImage extends StatefulWidget {
 
 class _GetImageState extends State<GetImage> {
   late bool isimage = false;
-  late bool _loading;
   late bool isclassifed = false;
-  late var _image;
   late var image;
-  late List _outputs = [];
   var output;
   var result = '';
 
+  @override
   void initState() {
     super.initState();
-    _loading = true;
 
     loadModel().then((value) {
-      setState(() {
-        _loading = false;
-      });
+      setState(() {});
     });
   }
 
@@ -49,12 +44,8 @@ class _GetImageState extends State<GetImage> {
     if (image != null) {
       setState(() {
         isimage = true;
-        _loading = true;
-        _image = image;
         classifyImage(image);
       });
-    } else {
-      print('hi1');
     }
   }
 
@@ -64,11 +55,8 @@ class _GetImageState extends State<GetImage> {
     if (image != null) {
       setState(() {
         isimage = true;
-        _loading = true;
         classifyImage(image);
       });
-    } else {
-      print('error form pickImageFromGallery ');
     }
   }
 
@@ -88,66 +76,33 @@ class _GetImageState extends State<GetImage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final viewScreenHeight = screenHeight - statusBarHeight;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            SizedBox(
+              height: statusBarHeight,
+            ),
             if (!isimage)
               Column(
                 children: [
-                  getImageCamera(),
-                  GridView.count(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: .5,
-                    mainAxisSpacing: .5,
-                    shrinkWrap: true,
-                    children: [
-                      getImageGallery(),
-                      Image.asset('assets/image/1.jpg', fit: BoxFit.cover),
-                      Image.asset('assets/image/2.jpg', fit: BoxFit.cover),
-                      Image.asset('assets/image/3.jpg', fit: BoxFit.cover),
-                      Image.asset('assets/image/4.jpg', fit: BoxFit.cover),
-                      Image.asset('assets/image/5.jpg', fit: BoxFit.cover),
-                      Image.asset('assets/image/6.jpg', fit: BoxFit.cover),
-                      Image.asset('assets/image/7.jpg', fit: BoxFit.cover),
-                      Image.asset('assets/image/8.jpg', fit: BoxFit.cover),
-                      Image.asset('assets/image/9.jpg', fit: BoxFit.cover),
-                      Image.asset('assets/image/10.jpg', fit: BoxFit.cover),
-                      Image.asset('assets/image/11.jpg', fit: BoxFit.cover),
-                    ],
-                    // children: List.generate(
-                    //   11,
-                    //   (index) {
-                    //     return Padding(
-                    //       padding: const EdgeInsets.all(1.0),
-                    //       child: Container(
-                    //         child: Text(index.toString()),
-                    //         decoration: const BoxDecoration(
-                    //           color: Colors.white,
-                    //           borderRadius: BorderRadius.all(
-                    //             Radius.circular(20.0),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     );
-                    //   },
-                    // ),
-                  )
+                  getImageCamera(viewScreenHeight),
+                  gridviewImage(viewScreenHeight)
                 ],
               ),
             if (isimage)
               Column(
                 children: [
                   SizedBox(
-                    height: 650,
+                    height: viewScreenHeight * .8,
                     child: Column(
                       children: [
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        if (isimage) buildFileImage(),
+                        if (isimage) buildFileImage(viewScreenHeight),
                         const SizedBox(
                           height: 10,
                         ),
@@ -196,9 +151,30 @@ class _GetImageState extends State<GetImage> {
     );
   }
 
-  Container getImageGallery() {
+  GridView gridviewImage(viewScreenHeight) {
+    return GridView.count(
+      crossAxisCount: 3,
+      crossAxisSpacing: .5,
+      mainAxisSpacing: .5,
+      shrinkWrap: true,
+      children: List.generate(
+        12,
+        (index) {
+          var filename = "assets/image/" + index.toString() + ".jpg";
+          return index == 0
+              ? getImageGallery(viewScreenHeight)
+              : Padding(
+                  padding: const EdgeInsets.all(1.0),
+                  child: Image.asset(filename, fit: BoxFit.cover),
+                );
+        },
+      ),
+    );
+  }
+
+  Container getImageGallery(viewScreenHeight) {
     return Container(
-      height: 200,
+      height: viewScreenHeight * .8,
       color: Colors.grey,
       child: IconButton(
         iconSize: 50,
@@ -211,28 +187,23 @@ class _GetImageState extends State<GetImage> {
     );
   }
 
-  Container getImageCamera() {
+  Container getImageCamera(viewScreenHeight) {
     return Container(
-      height: 200,
-      child: Padding(
-        padding: const EdgeInsets.only(top: 60),
-        child: Container(
-          height: 80,
-          width: 80,
-          decoration: const BoxDecoration(
-            color: Colors.black,
-            borderRadius: BorderRadius.all(
-              Radius.circular(40.0),
-            ),
-          ),
-          child: IconButton(
-            iconSize: 50,
-            color: Colors.white,
-            icon: const Icon(Icons.camera_alt_outlined),
-            onPressed: () {
-              pickImageFormCamera();
-            },
-          ),
+      height: viewScreenHeight * .25,
+      child: Container(
+        height: 80,
+        width: 80,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.black,
+        ),
+        child: IconButton(
+          iconSize: 50,
+          color: Colors.white,
+          icon: const Icon(Icons.camera_alt_outlined),
+          onPressed: () {
+            pickImageFormCamera();
+          },
         ),
       ),
       alignment: Alignment.center,
@@ -242,78 +213,28 @@ class _GetImageState extends State<GetImage> {
   Container getResultTap(int i) {
     var name = output[i]["label"].replaceAll('\t', ' ').substring(2);
     name = name[0].toUpperCase() + name.substring(1);
+    var filename = output[i]["label"];
+
+    filename = "assets/image/" + filename[0] + ".jpg";
     var confidence = output[i]['confidence'];
     var confidencepercent =
         ' (' + (output[i]["confidence"] * 100).toStringAsFixed(0) + '%)';
     return Container(
-        height: 70,
-        // padding: const EdgeInsets.only(right: 2),
-        margin: const EdgeInsets.only(top: 8),
-        child: Row(
-          children: [
-            Container(
-              width: 90,
-              height: 70,
-              padding: const EdgeInsets.all(5),
-              child: ClipRRect(
-                child: Image.asset('assets/image/1.jpg', fit: BoxFit.cover),
-                borderRadius: BorderRadius.circular(23),
-              ),
-            ),
-            SizedBox(
-              width: 190,
-              child: Column(
-                children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.only(right: 5),
-                        width: 130,
-                        child: LinearProgressIndicator(
-                          value: confidence,
-                          minHeight: 5,
-                          color: Colors.black,
-                          backgroundColor: Colors.grey,
-                        ),
-                      ),
-                      Text(
-                        confidencepercent,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              width: 50,
-              height: 70,
-              child: Icon(
-                Icons.check_circle_outline,
-                color: Color(0xffcad4ee),
-              ),
-            ),
-          ],
-        ));
+      child: ResultRow(
+          filename: filename,
+          name: name,
+          confidence: confidence,
+          confidencepercent: confidencepercent),
+    );
   }
 
-  Widget buildFileImage() => SizedBox(
+  Widget buildFileImage(viewScreenHeight) => SizedBox(
         width: 330,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: Image.file(
             File(image.path),
-            height: 210,
+            height: viewScreenHeight * .3,
             fit: BoxFit.cover,
           ),
         ),
@@ -350,41 +271,5 @@ class _GetImageState extends State<GetImage> {
         ),
       );
     }
-  }
-}
-
-class Resulttab extends StatelessWidget {
-  Resulttab({
-    Key? key,
-    required this.output,
-  }) : super(key: key);
-
-  final List<dynamic> output;
-  var name;
-  var confidence;
-  @override
-  Widget build(BuildContext context) {
-    name = output[0]["label"].replaceAll('\t', ' ').substring(2);
-    name = name[0].toUpperCase() + name.substring(1);
-    confidence = output[0]['confidence'];
-    return Container(
-        height: 70,
-        color: Colors.amberAccent,
-        // padding: const EdgeInsets.all(5),
-        child: Column(
-          children: [
-            Text(
-              name,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: LinearProgressIndicator(
-                value: confidence,
-                minHeight: 2,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ));
   }
 }

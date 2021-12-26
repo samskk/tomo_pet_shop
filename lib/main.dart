@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-import 'package:image_picker/image_picker.dart';
-import 'package:tflite/tflite.dart';
 import 'package:tomo_pet_shop/get_image.dart';
 
 void main() => runApp(const MyApp());
@@ -13,6 +10,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -33,11 +32,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late bool _loading;
-
+  @override
   void initState() {
     super.initState();
-    _loading = true;
   }
 
   final ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
@@ -61,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => GetImage()),
+                  MaterialPageRoute(builder: (context) => const GetImage()),
                 );
               },
               child: const Text(
