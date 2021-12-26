@@ -178,7 +178,7 @@ class _GetImageState extends State<GetImage> {
       color: Colors.grey,
       child: IconButton(
         iconSize: 50,
-        icon: const Icon(Icons.image_search),
+        icon: const Icon(Icons.photo_library_outlined),
         onPressed: () {
           pickImageFromGallery();
         },

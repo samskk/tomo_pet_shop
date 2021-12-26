@@ -52,7 +52,7 @@ class ResultRow extends StatelessWidget {
                         width: 130,
                         child: LinearProgressIndicator(
                           value: confidence,
-                          minHeight: 5,
+                          minHeight: 6,
                           color: Colors.black,
                           backgroundColor: const Color(0xffcad4ee),
                         ),
@@ -69,12 +69,14 @@ class ResultRow extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(
-              width: 50,
-              height: 70,
-              child: Icon(
-                Icons.check_circle_outline,
-                color: Color(0xffcad4ee),
+            const Expanded(
+              child: SizedBox(
+                width: 50,
+                height: 70,
+                child: Icon(
+                  Icons.check_circle_outline,
+                  color: Color(0xffcad4ee),
+                ),
               ),
             ),
           ],
