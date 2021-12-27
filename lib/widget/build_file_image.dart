@@ -14,15 +14,13 @@ class BuildFileImage extends StatelessWidget {
   final dynamic image;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Image.file(
-          File(image.path),
-          width: screenWidth,
-          height: viewScreenHeight * .3,
-          fit: BoxFit.cover,
-        ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Image.file(
+        File(image.path),
+        width: screenWidth,
+        height: viewScreenHeight * .3,
+        fit: BoxFit.cover,
       ),
     );
   }
