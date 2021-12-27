@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
+
 import 'package:tomo_pet_shop/widget/result_row.dart';
 
 class GetImage extends StatefulWidget {
@@ -77,6 +78,8 @@ class _GetImageState extends State<GetImage> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.height;
+
     final statusBarHeight = MediaQuery.of(context).padding.top;
     final viewScreenHeight = screenHeight - statusBarHeight;
     return Scaffold(
@@ -102,7 +105,13 @@ class _GetImageState extends State<GetImage> {
                     height: viewScreenHeight * .8,
                     child: Column(
                       children: [
-                        if (isimage) buildFileImage(viewScreenHeight),
+                        // if (isimage) buildFileImage(viewScreenHeight),
+                        if (isimage)
+                          BuildFileImage(
+                            image: image,
+                            screenWidth: screenWidth,
+                            viewScreenHeight: viewScreenHeight,
+                          ),
                         const SizedBox(
                           height: 10,
                         ),
@@ -271,5 +280,33 @@ class _GetImageState extends State<GetImage> {
         ),
       );
     }
+  }
+}
+
+class BuildFileImage extends StatelessWidget {
+  const BuildFileImage({
+    Key? key,
+    required this.viewScreenHeight,
+    required this.screenWidth,
+    required this.image,
+  }) : super(key: key);
+  final double viewScreenHeight;
+  final double screenWidth;
+  final dynamic image;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // padding:const EdgeInsets.all(8),
+      margin: const EdgeInsets.all(5),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Image.file(
+          File(image.path),
+          width: screenWidth ,
+          height: viewScreenHeight * .3,
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
   }
 }

@@ -43,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
     minimumSize: const Size(275, 40),
     padding: const EdgeInsets.symmetric(horizontal: 16),
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(4)),
+      borderRadius: BorderRadius.all(Radius.circular(13)),
     ),
   );
   @override
