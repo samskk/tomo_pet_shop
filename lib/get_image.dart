@@ -1,11 +1,8 @@
-// ignore_for_file: unnecessary_string_escapes
-
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
-
+import 'package:tomo_pet_shop/widget/build_file_image.dart';
 import 'package:tomo_pet_shop/widget/result_row.dart';
 
 class GetImage extends StatefulWidget {
@@ -32,56 +29,17 @@ class _GetImageState extends State<GetImage> {
   }
 
   final ImagePicker _picker = ImagePicker();
-  loadModel() async {
-    await Tflite.loadModel(
-      model: "assets/model_unquant.tflite",
-      labels: "assets/labels.txt",
-    );
-  }
-
-  pickImageFormCamera() async {
-    isimage = false;
-    image = await _picker.pickImage(source: ImageSource.camera);
-    if (image != null) {
-      setState(() {
-        isimage = true;
-        classifyImage(image);
-      });
-    }
-  }
-
-  pickImageFromGallery() async {
-    isimage = false;
-    image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        isimage = true;
-        classifyImage(image);
-      });
-    }
-  }
-
-  classifyImage(XFile image) async {
-    isclassifed = false;
-    output = await Tflite.runModelOnImage(
-      path: image.path,
-      numResults: 3,
-      threshold: 0.5,
-      imageMean: 127.5,
-      imageStd: 127.5,
-    );
-    setState(() {
-      isclassifed = true;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
+
+
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.height;
-
     final statusBarHeight = MediaQuery.of(context).padding.top;
     final viewScreenHeight = screenHeight - statusBarHeight;
+
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -105,7 +63,6 @@ class _GetImageState extends State<GetImage> {
                     height: viewScreenHeight * .8,
                     child: Column(
                       children: [
-                        // if (isimage) buildFileImage(viewScreenHeight),
                         if (isimage)
                           BuildFileImage(
                             image: image,
@@ -116,7 +73,6 @@ class _GetImageState extends State<GetImage> {
                           height: 10,
                         ),
                         Container(
-                          margin: const EdgeInsets.only(right: 5, left: 5),
                           padding: const EdgeInsets.only(top: 50, bottom: 50),
                           decoration: const BoxDecoration(
                               color: Color(0xffe4e9f5),
@@ -160,6 +116,49 @@ class _GetImageState extends State<GetImage> {
     );
   }
 
+  loadModel() async {
+    await Tflite.loadModel(
+      model: "assets/model_unquant.tflite",
+      labels: "assets/labels.txt",
+    );
+  }
+
+  pickImageFormCamera() async {
+    isimage = false;
+    image = await _picker.pickImage(source: ImageSource.camera);
+    if (image != null) {
+      setState(() {
+        isimage = true;
+        classifyImage(image);
+      });
+    }
+  }
+
+  pickImageFromGallery() async {
+    isimage = false;
+    image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        isimage = true;
+        classifyImage(image);
+      });
+    }
+  }
+
+  classifyImage(XFile image) async {
+    isclassifed = false;
+    output = await Tflite.runModelOnImage(
+      path: image.path,
+      numResults: 3,
+      threshold: 0.5,
+      imageMean: 127.5,
+      imageStd: 127.5,
+    );
+    setState(() {
+      isclassifed = true;
+    });
+  }
+
   GridView gridviewImage(viewScreenHeight) {
     return GridView.count(
       crossAxisCount: 3,
@@ -184,9 +183,10 @@ class _GetImageState extends State<GetImage> {
   Container getImageGallery(viewScreenHeight) {
     return Container(
       height: viewScreenHeight * .8,
-      color: Colors.grey,
+      color: Colors.black,
       child: IconButton(
         iconSize: 50,
+        color: Colors.white,
         icon: const Icon(Icons.photo_library_outlined),
         onPressed: () {
           pickImageFromGallery();
@@ -237,18 +237,6 @@ class _GetImageState extends State<GetImage> {
     );
   }
 
-  Widget buildFileImage(viewScreenHeight) => SizedBox(
-        width: 330,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Image.file(
-            File(image.path),
-            height: viewScreenHeight * .3,
-            fit: BoxFit.cover,
-          ),
-        ),
-      );
-
   displayResult() {
     if (output.isNotEmpty) {
       if (output.length == 1) {
@@ -280,33 +268,5 @@ class _GetImageState extends State<GetImage> {
         ),
       );
     }
-  }
-}
-
-class BuildFileImage extends StatelessWidget {
-  const BuildFileImage({
-    Key? key,
-    required this.viewScreenHeight,
-    required this.screenWidth,
-    required this.image,
-  }) : super(key: key);
-  final double viewScreenHeight;
-  final double screenWidth;
-  final dynamic image;
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      // padding:const EdgeInsets.all(8),
-      margin: const EdgeInsets.all(5),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Image.file(
-          File(image.path),
-          width: screenWidth ,
-          height: viewScreenHeight * .3,
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
   }
 }
