@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
 import 'package:tomo_pet_shop/widget/build_file_image.dart';
+import 'package:tomo_pet_shop/widget/cannot_determine.dart';
+import 'package:tomo_pet_shop/widget/done_button.dart';
 import 'package:tomo_pet_shop/widget/result_row.dart';
 
 class GetImage extends StatefulWidget {
@@ -17,27 +19,20 @@ class _GetImageState extends State<GetImage> {
   late var image;
   var output;
   var result = '';
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
-
-    loadModel().then((value) {
-      setState(() {});
-    });
+    loadModel();
   }
-
-  final ImagePicker _picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
-
-
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.height;
     final statusBarHeight = MediaQuery.of(context).padding.top;
     final viewScreenHeight = screenHeight - statusBarHeight;
-
 
     return Scaffold(
       body: Padding(
@@ -86,27 +81,7 @@ class _GetImageState extends State<GetImage> {
                       ],
                     ),
                   ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      onPrimary: Colors.grey,
-                      primary: Colors.black,
-                      minimumSize: const Size(275, 40),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      'Done',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                  const DoneButton(),
                 ],
               ),
           ],
@@ -236,7 +211,7 @@ class _GetImageState extends State<GetImage> {
     );
   }
 
-  displayResult() {
+  Widget displayResult() {
     if (output.isNotEmpty) {
       if (output.length == 1) {
         return Column(
@@ -246,26 +221,22 @@ class _GetImageState extends State<GetImage> {
         );
       } else if (output.length == 2) {
         return Column(
-          children: [getResultTap(0), getResultTap(1)],
+          children: [
+            getResultTap(0),
+            getResultTap(1),
+          ],
         );
       } else {
         return Column(
-          children: [getResultTap(0), getResultTap(1), getResultTap(2)],
+          children: [
+            getResultTap(0),
+            getResultTap(1),
+            getResultTap(2),
+          ],
         );
       }
     } else {
-      return Container(
-        alignment: Alignment.center,
-        height: 70,
-        margin: const EdgeInsets.all(8),
-        child: const Text(
-          'Cannot determine breed',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      );
+      return const CannotDetermine();
     }
   }
 }
